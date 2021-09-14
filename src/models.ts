@@ -14,13 +14,11 @@ export class FakeResponse {
     }
 
     get response() {
-        console.log('data', this.data)
-        console.log('errors', this.errors)
         return this
     }
 }
 
-class Message {
+abstract class Message {
     setNextHandler(obj: Message) {}
 
     handleResponse(res: FakeResponse) {
@@ -39,7 +37,8 @@ export class Success extends Message {
     }
 
     handleResponse(res: FakeResponse) {
-        if (res.data && res.data.length && !res.errors.length) {
+        const { data, errors } = res.response
+        if (data && data.length && !errors.length) {
             console.log('Success')
         } else {
             this.nextMessage.handleResponse(res)
@@ -58,7 +57,8 @@ export class Warning extends Message {
     }
 
     handleResponse(res: FakeResponse) {
-        if (!res.data && !res.errors.length) {
+        const { data, errors } = res.response
+        if (!data && !errors.length) {
             console.log('Warning')
         } else {
             this.nextMessage.handleResponse(res)
@@ -77,7 +77,8 @@ export class Error extends Message {
     }
 
     handleResponse(res: FakeResponse) {
-        if (res.data && res.data.length && res.errors.length) {
+        const { data, errors } = res.response
+        if (data && data.length && errors.length) {
             console.log('Error')
         } else {
             this.nextMessage.handleResponse(res)
@@ -96,7 +97,8 @@ export class CriticalError extends Message {
     }
 
     handleResponse(res: FakeResponse) {
-        if (!res.data && res.errors.length) {
+        const { data, errors } = res.response
+        if (!data && errors.length) {
             console.log('Critical Error')
         } else {
             this.nextMessage.handleResponse(res)
